@@ -89,6 +89,8 @@ class Backup {
         this.worldname = worldname
         this.JobManager = JobManager
 
+        this.exportedBackupRemoveTime = 1000*60*15
+
         this._events = {
             start: [],
             stop: [],
@@ -424,8 +426,8 @@ class Backup {
             await fs.remove(tempFolderExport)
             setTimeout(async ()=>{
                 await fs.remove(ExportDest)
-            },1000*60*15)
-            this.JobManager.endJob(jobid,false,{path:`/temp/ExportBackup/${exportName}.zip`,expire:Date.now()+1000*60*15})
+            },this.exportedBackupRemoveTime)
+            this.JobManager.endJob(jobid,false,{path:`/temp/ExportBackup/${exportName}.zip`,expire:Date.now()+this.exportedBackupRemoveTime})
 
         }catch(e){
             this.JobManager.endJob(jobid,true,{path:``})
@@ -433,7 +435,20 @@ class Backup {
         } finally {
             setTimeout(()=>{
                 this.JobManager.deleteJob(jobid)
-            },1000*60*15)
+            },this.exportedBackupRemoveTime)
+        }
+    }
+    async exportedBackupRemove() {
+        try {
+            const p = path.join(this.root,"temp","BackupExport")
+            if (!await fs.pathExists(p)) return;
+
+            const list = await fs.readdir(p)
+            for (const file of list.filter((v)=>(/\.zip$/.test(v)))) {
+                await fs.remove(path.join(p,file))
+            }
+        }catch(e) {
+            throw e
         }
     }
 

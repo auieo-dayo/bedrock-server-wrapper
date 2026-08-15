@@ -1150,6 +1150,10 @@ backup.on("restoreEnd",()=>{
   logm.Server(`Restore End`)
 })
 
+// 一度エクスポート済みのバックアップを削除
+await backup.exportedBackupRemove()
+
+
 // 自動0時フルバックアップ
 
 function scheduleNextMidnightFullBackup() {
