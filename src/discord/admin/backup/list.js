@@ -1,5 +1,4 @@
-
-async function l(backup,message,) {
+async function l(backup,message) {
 
     const blist = await backup.getlist("",true)
         

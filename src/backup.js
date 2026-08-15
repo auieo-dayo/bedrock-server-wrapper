@@ -105,6 +105,7 @@ class Backup {
     waitForPreparationsComplete(bds) {
         if (!config.backup.enabled) return
         if (!bds) return
+        
         bds.sendCommand("save hold",true)
 
         return new Promise((resolve, reject) => {
@@ -148,14 +149,14 @@ class Backup {
         }
         return
     }
-    async backup(list,isfull=false,notskip=false,PlayerStore,bds) {
+    async backup(list,isfull=false,notskip=false,PlayerStore,bds,reason="unknown") {
         if (this.isrestoring) return bds.sendCommand("save resume",true)
         if (!config.backup.enabled) return bds.sendCommand("save resume",true)
         if (!list && !isfull) return bds.sendCommand("save resume",true)
-        const elapsed = Date.now() - this.lastBackup;
+        const elapsed = Date.now() - this.lastBackupForPlayerLeave;
         const intervalMs = config.backup.interval * 60 * 1000;
+        if (!notskip && reason === "playerleave" && elapsed < intervalMs) return bds.sendCommand("save resume",true)
         if (!notskip && (typeof PlayerStore.getAll()[0] == "undefined" && config.backup.pauseIfNoPlayer)) return bds.sendCommand("save resume",true);
-        if (!notskip && elapsed < intervalMs) return bds.sendCommand("save resume",true)
 
         this.emit("start",isfull)
         this.isbackuping = true
@@ -232,6 +233,7 @@ class Backup {
         await fs.writeJSON(snapshotFile,newSnap,{spaces:2})
         if (copyCount === 0) await fs.remove(fullpath);
         this.lastBackup = Date.now()
+        if (reason === "playerleave") this.lastBackupForPlayerLeave = Date.now();
         this.emit("stop")
         this.isbackuping = false
         if (bds) bds.sendCommand("save resume",true);

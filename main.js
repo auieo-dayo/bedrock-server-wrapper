@@ -1019,9 +1019,8 @@ client.on(discord.Events.InteractionCreate,async (interaction)=>{
       await interaction.deferReply({content:`復元中...`})
       discordCommands.admin.backup.restore(backup,target,interaction,bds)
     }else if (sub == "list") {
-      const target = interaction.options.getString("target")
-      await interaction.deferReply({content:`復元中...`})
-      await discordCommands.admin.backup.list(backup,interaction,target)
+      await interaction.deferReply({content:`取得中...`})
+      await discordCommands.admin.backup.list(backup,interaction)
     }
   }
   // Ban系
@@ -1333,12 +1332,15 @@ bds.on("spawn",(json)=>{
 })
 
 // BDS Leave
-bds.on("leave",(json)=>{
+bds.on("leave",async(json)=>{
   WSbroadcast({"type":"PlayerLeave","data":json.name})
 
   onlinePlayer.leave(json.name)
   LLtoDis(json.name,"logout")
-  if (!bm.isbanned(json.name) && config.backup.leavePlayerBackup) backup.waitForPreparationsComplete(bds).then((list)=>backup.backup(list,false,false,onlinePlayer,bds));
+  if (!bm.isbanned(json.name) && config.backup.leavePlayerBackup) {
+    const list = backup.waitForPreparationsComplete(bds)
+    backup.backup(list,false,false,onlinePlayer,bds,"playerleave")
+  }
   if (config.console.leavePlayerLogToConsole) console.log(chalk.bgBlue(`PlayerLeave:${json.name}`))
 })
 
