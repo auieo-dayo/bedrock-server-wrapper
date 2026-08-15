@@ -4,33 +4,71 @@
 
 ### 概要
 
-サーバーログの最新300件を取得する。
+サーバーログを取得する。
 
 ### メソッド
 
 `GET`
 
+### オプション(クエリパラメータ指定)
+
+| パラメータ | 型     | 説明                                                                   |
+| --------- | ------ | ---------------------------------------------------------------------  |
+| `l`       | number | ログ取得の最大件数(デフォルト:300 最大値:1000)                            |
+
 ### レスポンス例
 
 ```json
 [
+
+  {
+    "type": "BDS",
+    "data": "[2026-08-14 19:10:59:142 INFO] Server started.",
+    "time": 1766216088127
+  },
   {
     "data": "Player1",
     "type": "PlayerJoin",
-    "time": 1766216088127
+    "time": 1766216098127
   },
   {
-    "data": "Player1:こんにちは!",
     "type": "chat",
-    "time": 1766216090127
+    "data": "[D]Hoge:hello world",
+    "time": 1766216108127,
+    "player": "Hoge",
+    "message": "hello world",
+    "source": "Discord"
   },
   {
-    "data": "NO LOG FILE! - setting up server logging...",
-    "type": "BDS",
-    "time": 1766216088127
+    "type": "chat",
+    "data": "Player1:hello world",
+    "time": 1766216118127,
+    "player": "Player1",
+    "message": "hello world",
+    "source": "Minecraft"
+  },
+  {
+    "type": "death",
+    "data": "Player1(void())",
+    "time": 1766216128127,
+    "player": "Player1",
+    "reason": "void()",
+    "location": {
+      "z": 0,
+      "y": 0,
+      "x": 0
+    },
+    "dimension": "minecraft:the_end"
+  },
+  {
+    "type": "server",
+    "data": "BackupSuccessful(diff)(4.98 Seconds)",
+    "time": 1766216138127
   }
 ]
 ```
+
+*  取得したログは、日時の昇順（古い → 新しい）で返されます。
 
 ### フィールド
 
@@ -214,7 +252,7 @@
 
 | パラメータ     | 型      | 説明                                      | 例            |
 | --------- | ------ | --------------------------------------- | ------------ |
-| `actiontype` | string | イベントのタイプ（`place` 設置 / `break` 破壊） | `actiontype=place` |
+| `actiontype` | string | イベントのタイプ（`place` 設置 / `break` 破壊 / `explode` 爆発による破壊） | `actiontype=place` |
 | `player`  | string | プレイヤー名でフィルタ                         | `player=Player1` |
 | `block`   | string | ブロックID でフィルタ（例: `minecraft:stone`）| `block=minecraft:stone` |
 | `minutes` | number | 指定時間内のイベントを取得（分単位）               | `minutes=60` |
@@ -255,7 +293,7 @@
 | フィールド     | 型      | 説明                        |
 | --------- | ------ | ------------------------- |
 | `time`    | number | UNIXタイムスタンプ（ミリ秒）      |
-| `action`  | number | `0` = 設置、`1` = 破壊        |
+| `action`  | number | `0` = 設置、`1` = 破壊、`2` = 爆発による破壊        |
 | `dimension` | string | ディメンション（例: `minecraft:overworld`) |
 | `location` | object | ブロックの座標                 |
 | `location.x` | number | X 座標                    |

@@ -1,7 +1,7 @@
 
 ## WebSocketの仕様
 
-* URL: `ws://localhost:3000/ws`
+* URL: `ws://localhost:3000/ws?token=xxxxxxx`
 * データ形式: JSON
 * 受信データ:
 
@@ -14,6 +14,7 @@
 
 * `time` は付与されません
 * APIとの互換性は `type` と `data` で保持されます
+* トークンは [API | /api/getwstoken](API.md#6-apigetwstoken)を参考に取得してください
 
 ### endJobイベント
 

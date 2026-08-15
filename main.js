@@ -266,7 +266,7 @@ app.use('/',limit)
 //  Basic
 if (config.webUi.basicAuth.enable) {
   app.use('/', basicAuth({
-    users: { [config.webUi.username ?? "admin"] : config.webUi.password ?? "admin" },
+    users: { [config.webUi.basicAuth.username ?? "admin"] : config.webUi.basicAuth.password ?? "admin" },
     challenge: true,           // 認証ダイアログを出す
     realm: 'BSM-DashBoard-Login'         // ダイアログに表示される領域名
   }));
@@ -283,6 +283,7 @@ app.get('/api/getwstoken',(req,res,next)=>{
 
 app.get('/api/getbdspw', async (req, res, next) => {
   try {
+    if (!["127.0.0.1","::1","::ffff:127.0.0.1"].includes(req.socket?.remoteAddress)) return res.sendStatus(404);
     const json = {"password": BDSsendPass}
     res.type("json").send(JSON.stringify(json,null,2))
   }catch (err) {
@@ -293,8 +294,8 @@ app.get('/api/getbdspw', async (req, res, next) => {
 
 app.get('/api/getlog', async (req, res, next) => {
   try {
-    const {_l} = req.query
-    let limit = Number(_l)
+    const {l} = req.query
+    let limit = Number(l)
     if (Number.isNaN(limit)) limit=300
     if (limit <= 0 || limit > 1000) limit = 1000
     const prepare = logm.db.prepare(`SELECT * FROM events ORDER BY time DESC LIMIT ?`)
@@ -387,7 +388,10 @@ app.get('/api/blockevents',async(req,res,next)=>{
     const params = []
     if (actiontype) {
         conditions.push("actiontype=?")
-        params.push(actiontype === "place" ? Logger.Types.blockevents.actiontype.PlaceBlock : Logger.Types.blockevents.actiontype.BreakBlock)
+        const type = actiontype === "place" ? Logger.Types.blockevents.actiontype.PlaceBlock :
+         actiontype === "break" ? Logger.Types.blockevents.actiontype.BreakBlock :
+         actiontype === "explode" ? Logger.Types.blockevents.actiontype.ExplodeBlock: Logger.Types.blockevents.actiontype.BreakBlock;
+        params.push(type)
     }
     if (player) {
         conditions.push("player=?")

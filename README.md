@@ -50,10 +50,10 @@ BSM はワールド起動時に **BetaAPI** の状態を自動判定・管理し
 > - 元の `level.dat` は `level.dat.old` としてバックアップされます
 
 ## 設定
-- `config.js`：BSM の設定（WebUI, Discord, backup 等）
+- `config/config.js`：BSM の設定（WebUI, Discord, backup 等）
 詳しくは[docs/config.md](docs/config.md) を参照してください。
 
-- `.env`：BDS の `server.properties` に対応する設定（`server-name`, `gamemode`, `level-name` など）
+- `.env`：BDS の `server.properties` に対応する一部の設定（`server-name`, `gamemode`, `level-name` など）
 詳しくは[docs/env.md](docs/env.md) を参照してください。
 
 

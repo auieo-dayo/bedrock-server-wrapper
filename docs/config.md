@@ -1,6 +1,6 @@
 # 設定ドキュメント
 
-BSM（Bedrock Server Manager）の設定について説明します。設定は `config.js` ファイルで行います。`config.sample.js` をコピーして `config.js` に変更します
+BSM（Bedrock Server Manager）の設定について説明します。設定は `config/config.js` ファイルで行います。`config/config.sample.js` をコピーして `config/config.js` に変更します
 
 ---
 
@@ -158,7 +158,7 @@ BSMをDiscord Botと連携させて、チャットや通知をDiscordに送信�
 
 ---
 
-## 4. update（BDSアップデート設定）
+## 3. update（BDSアップデート設定）
 
 BDSのアップデート設定を管理します。
 
@@ -187,7 +187,7 @@ BDSのアップデート設定を管理します。
 
 ---
 
-## 5. backup（自動バックアップ設定）
+## 4. backup（自動バックアップ設定）
 
 サーバーワールドの自動バックアップを設定します。
 
@@ -215,7 +215,7 @@ BDSのアップデート設定を管理します。
 
 ---
 
-## 6. webUi（Web UI設定）
+## 5. webUi（Web UI設定）
 
 Web管理画面にアクセスする際の設定です。`webUi` 内で `basicAuth` を設定できます。
 
@@ -245,7 +245,7 @@ Web管理画面にアクセスする際の設定です。`webUi` 内で `basicAu
 
 ---
 
-## 7. blockLog（ブロックログ設定）
+## 6. blockLog（ブロックログ設定）
 
 ブロックの設置・破壊・爆発ログを記録する設定です。
 
@@ -269,7 +269,7 @@ Web管理画面にアクセスする際の設定です。`webUi` 内で `basicAu
 
 ## セットアップ手順
 
-1. `config.sample.js` をコピーしてファイル名を `config.js` に変更します
-2. `config.js` をテキストエディタで開き、必要な設定を変更します
+1. `config/config.sample.js` をコピーしてファイル名を `config/config.js` に変更します
+2. `config/config.js` をテキストエディタで開き、必要な設定を変更します
 3. Discord Botを使用する場合は、`TOKEN` フィールドに DiscordのBotトークンを入力し、`guildId` に使うサーバーのIDを入力してください
 4. 設定が完了したら、BSMを起動すると新しい設定が適用されます
