@@ -41,7 +41,6 @@ class BDS {
             output: this.bds.stdin,
         });
         this.started = true
-
         this.bds.on("close",(code)=>{
             if (!this.started) return;
             this.emit("close",code)
@@ -144,6 +143,11 @@ class BDS {
 
     exit() {
         this.sendCommand("stop")
+    }
+
+    /**@param {NodeJS.Signals | number} signal  */
+    forceExit(signal) {
+        return this.bds.kill(signal)
     }
 
     sendCommand(cmd,hidden=false) {

@@ -954,11 +954,13 @@ client.on(discord.Events.InteractionCreate,async (interaction)=>{
   // ボタンの場合
   if (interaction.isButton()) {
     const buttonid = interaction.customId
+    const [key,timeout,userid] = buttonid.split("_")
+1
     // BDSのアップデートなら
-    if (/^bdsUpdate_\d+_\d+/.test(buttonid)) {
+    if (key === "bdsUpdate") {
       await interaction.update({components:[]})
       // 本人以外なら
-      if (buttonid.split("_")[2] !== interaction.user.id) {
+      if (userid !== interaction.user.id) {
         await interaction.followUp({content:"本人以外は実行できません。"});
         return
       }
@@ -968,7 +970,6 @@ client.on(discord.Events.InteractionCreate,async (interaction)=>{
         return
       }
       
-      const timeout = buttonid.split("_")[1]
       if (timeout < Date.now()) return;
       
       const msg = await interaction.followUp({content:"アップデート中です...(BDSの終了待機中)"})
@@ -986,7 +987,27 @@ client.on(discord.Events.InteractionCreate,async (interaction)=>{
       }
       bds.on("close",onClose)
       bds.exit()
+    }
 
+    // ForceRestartなら
+    // forceRestart_${Date.now() + 1000*60*5}_${interaction.user.id}
+    if (key === "forceRestart") {
+      await interaction.update({components:[]})
+      // 本人以外なら
+      if (userid !== interaction.user.id) {
+        await interaction.followUp({content:"本人以外は実行できません。"});
+        return
+      }
+      // タイムアウト
+      if (timeout < Date.now()) return;
+
+      await interaction.followUp({content:"強制再起動を開始しました。"})
+
+      bds.bds.once("close",()=>{
+        bds.restart()
+      })
+      bds.forceExit("SIGKILL")
+      
     }
   }
 
@@ -1070,6 +1091,7 @@ client.on(discord.Events.InteractionCreate,async (interaction)=>{
     if (!option || option === "Info") return await discordCommands.admin.debug.default(interaction,logm);
     if (option === "WalCheckPoint") return await discordCommands.admin.debug.walcheckpoint(logm,interaction);
     if (option === "Status") return await discordCommands.admin.debug.status(interaction,bds.isProcessAlive().alive,BSMVer,bds.BDSver,latestbackup.time,latestbackup.isfull)
+    if (option === "forceRestart") return await discordCommands.admin.debug.forceRestart(interaction);
   }
   // Update系コマンド
   if (commandName === "update") {
@@ -1479,6 +1501,11 @@ bds.on('close', async(code,iserr) => {
     BetaApiEnable.run().then(()=>bds.restart())
   }
 
+  if (config.Discord.enabled && config.Discord.notifications.toAdmin.enabled && client.isReady()&& code !== 0) {
+    await channels.admin.send({"content":`BDSが終了コード\`${code}\`で異常終了しました。`})
+  }
+
+
   if (config.Discord.enabled && channels.serverStatus &&config.Discord.notifications.serverStatus.enabled&&client.isReady()) {
     const serverStopEmbed = new discord.EmbedBuilder()
     .setTitle("サーバーが停止しました。")
@@ -1487,7 +1514,7 @@ bds.on('close', async(code,iserr) => {
     .setTimestamp(new Date())
     await channels.serverStatus.send({embeds:[serverStopEmbed]})
     
-    if (stop) await client.destroy()
+    if (stop)  await client.destroy();
   }
   onlinePlayer.fullSync([])
   if (stop || iserr) process.exit(0);

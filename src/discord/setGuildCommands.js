@@ -187,7 +187,8 @@ export const commandlist = [
                 choices: [
                     {name: "walCheckPoint(PASSIVE)",value:"WalCheckPoint"},
                     {name:"Info",value:"Info"},
-                    {name:"Status",value:"Status"}
+                    {name:"Status",value:"Status"},
+                    {name:"BDSを強制再起動",value:"forceRestart"}
                 ]
             }
         ]

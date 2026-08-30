@@ -26,6 +26,7 @@ function r (backup,target,message,bds) {
                 })
                 .catch((e)=>{
                     message.editReply(`バックアップ復元失敗...再起動します。\n-# ${e.message}`)
+                    throw new Error(e)
                 })
                 .finally(()=>{
                     bds.restart()
